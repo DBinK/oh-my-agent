@@ -84,26 +84,28 @@ class ChatBot:
         return ai_response  # type: ignore
 
     def clear_history(self):
-        """清除对话历史，保留系统提示"""
+        """清除对话历史，保留系统提示词"""
         self.conversation = [self.conversation[0]]
 
 
 if __name__ == "__main__":
 
+    import cv2
     import json
     from rich import print
 
-    from vis import draw_yolo_style
+    from vis import draw_bbox
     from config import llm_configs
 
-    # bot = ChatBot(llm_configs["glm-4.5v"])
-    bot = ChatBot(llm_configs["qwen-vl-max"])
+    bot = ChatBot(llm_configs["glm-4.5v"])
+    # bot = ChatBot(llm_configs["qwen-vl-max"])
 
-    img_path = "tmp/test.png"
+    img_path = "tmp/test1.png"
     img_base64 = bot.encode_image(img_path)
 
     print("正在识别图片中物体的位置...")
-    result_text = bot.chat("找到奶龙", json_mode=True)
+    # result_text = bot.chat("画面里有什么", img_base64, json_mode=False)
+    result_text = bot.chat("画面里有什么", img_base64, json_mode=True)
 
     print(result_text)
 
@@ -111,5 +113,13 @@ if __name__ == "__main__":
 
     print(result_dict)
 
-    draw_yolo_style(img_path, result_dict)
-    draw_yolo_style(img_path, result_dict, None, 1000.0)
+    img = draw_bbox(img_path, result_dict)
+        # 使用OpenCV内置的ROI选择器
+    cv2.imshow("YOLO Style Detection", img)
+    cv2.waitKey(0)
+
+    img = draw_bbox(img_path, result_dict, None, 1000.0)    
+    # roi = cv2.selectROI("请选择ROI区域", img, fromCenter=False, showCrosshair=True)
+    # print("ROI区域:", roi)
+    cv2.imshow("YOLO Style Detection", img)
+    cv2.waitKey(0)

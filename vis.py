@@ -1,6 +1,7 @@
 import cv2
 import random
-def draw_yolo_style(image_path: str, detections: list, output_path: str | None = None, normalized_range: float | None = None):
+
+def draw_bbox(image_path: str, detections: list, output_path: str | None = None, normalized_range: float | None = None):
     """
     以YOLO风格绘制检测结果
 
@@ -83,10 +84,12 @@ def draw_yolo_style(image_path: str, detections: list, output_path: str | None =
     if output_path:
         cv2.imwrite(output_path, img)
         print(f"结果已保存到: {output_path}")
-    else:
-        cv2.imshow("YOLO Style Detection", img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    # else:
+    #     cv2.imshow("YOLO Style Detection", img)
+    #     cv2.waitKey(0)
+    #     cv2.destroyAllWindows()
+
+    return img
 
 
 if __name__ == "__main__":
@@ -113,9 +116,13 @@ if __name__ == "__main__":
 
     result_dict = json.loads(result_json_fix)
 
-    draw_yolo_style(image_path, result_dict)
+    img = draw_bbox(image_path, result_dict)
+    cv2.imshow("YOLO Style Detection", img)
+    cv2.waitKey(0)
 
-    draw_yolo_style(image_path, result_dict, None, 1000.0)
+    img = draw_bbox(image_path, result_dict, None, 1000.0)
+    cv2.imshow("YOLO Style Detection", img)
+    cv2.waitKey(0)
 
 
 
