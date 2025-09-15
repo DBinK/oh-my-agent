@@ -93,22 +93,17 @@ if __name__ == "__main__":
     import json
     from rich import print
 
-    from prompt import IMG_TO_BBOX, IMG_TO_BBOX_NORM
     from vis import draw_yolo_style
+    from config import llm_configs
 
-    glm45v_config = {
-        "model": "glm-4.5v",
-        "base_url": "https://open.bigmodel.cn/api/paas/v4/",
-        "system_prompt": IMG_TO_BBOX_NORM,
-        "api_key": "8dd3cb1ced784a0aaede31cb6c8595ce.URPzLkji9BeRvADu",
-    }
+    # bot = ChatBot(llm_configs["glm-4.5v"])
+    bot = ChatBot(llm_configs["qwen-vl-max"])
 
-    bot = ChatBot(glm45v_config)
-
-    img_path = r"tmp\test.png"
+    img_path = "tmp/test.png"
     img_base64 = bot.encode_image(img_path)
 
-    result_text = bot.chat("找到图中的奶龙", json_mode=True)
+    print("正在识别图片中物体的位置...")
+    result_text = bot.chat("找到奶龙", json_mode=True)
 
     print(result_text)
 
@@ -117,3 +112,4 @@ if __name__ == "__main__":
     print(result_dict)
 
     draw_yolo_style(img_path, result_dict)
+    draw_yolo_style(img_path, result_dict, None, 1000.0)
