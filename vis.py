@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     import json
 
-    image_path = "tmp/test.png"
+    image_path = "tmp/test1.png"
 
     # result_json_fix = """
     # [
@@ -110,18 +110,50 @@ if __name__ == "__main__":
     #     }
     # ]
     # """
+    
     result_json_fix = """
-        [{"bbox":[150,180,350,380],"name":"milk"}]
+
+[
+    {
+        "name": "banana",
+        "bbox": [195, 168, 278, 230]
+    },
+    {
+        "name": "apple",
+        "bbox": [408, 195, 463, 250]
+    },
+    {
+        "name": "kiwi",
+        "bbox": [391, 215, 446, 255]
+    },
+    {
+        "name": "milk",
+        "bbox": [283, 168, 375, 215]
+    },
+    {
+        "name": "milk",
+        "bbox": [328, 215, 391, 275]
+    },
+    {
+        "name": "water",
+        "bbox": [110, 135, 181, 205]
+    },
+    {
+        "name": "juice",
+        "bbox": [0, 195, 78, 265]
+    }
+]
+
+
     """
 
     result_dict = json.loads(result_json_fix)
 
     img = draw_bbox(image_path, result_dict)
-    cv2.imshow("YOLO Style Detection", img)
-    cv2.waitKey(0)
+    cv2.imshow("YOLO", img)
 
     img = draw_bbox(image_path, result_dict, None, 1000.0)
-    cv2.imshow("YOLO Style Detection", img)
+    cv2.imshow("YOLO_NORM", img)
     cv2.waitKey(0)
 
 
