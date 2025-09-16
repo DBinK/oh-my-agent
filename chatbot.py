@@ -1,7 +1,8 @@
 import base64
+import json
 from typing import Dict, Any
 
-from rich import print
+from rich import print 
 from openai import OpenAI
 
 
@@ -29,6 +30,26 @@ class ChatBot:
         with open(image_path, "rb") as image_file:
             return base64.b64encode(image_file.read()).decode("utf-8")
 
+    def json_loads(self, response_text):
+        """ 简单提取JSON部分的方法 """
+        try:  # 首先尝试直接解析整个响应文本
+            return json.loads(response_text)
+        except json.JSONDecodeError:
+            print("无法解析JSON，尝试提取文本中 JSON 部分")
+        
+        try:  # 查找第一个{和最后一个}的位置
+            first_brace = response_text.find('{')
+            last_brace = response_text.rfind('}')
+            
+            if first_brace != -1 and last_brace != -1 and first_brace < last_brace:
+                json_str = response_text[first_brace:last_brace+1]  # 提取JSON字符串
+                return json.loads(json_str)  # 尝试解析
+            
+        except json.JSONDecodeError:
+            print("提取文本中 JSON 部分失败")
+        
+        return None
+    
     def chat(
         self,
         user_input: str,                 # Prompt 输入
@@ -78,7 +99,7 @@ class ChatBot:
         response = self.client.chat.completions.create(**api_params)
 
         
-        print("AI: ", end="", flush=True)
+        print("LLM 实时回复: ", end="", flush=True)
         content_parts = []
         for chunk in response:
             # 最后一个chunk不包含choices，但包含usage信息。
@@ -93,7 +114,7 @@ class ChatBot:
                 print(chunk.usage)
 
         full_response = "".join(content_parts)
-        print(f"content_parts: {full_response}")
+        # print(f"content_parts: {full_response}")
 
         # 获取 AI 回复
         ai_response = full_response
@@ -110,6 +131,8 @@ class ChatBot:
     def clear_history(self):
         """清除对话历史，保留系统提示词"""
         self.conversation = [self.conversation[0]]
+
+
 
 
 if __name__ == "__main__":

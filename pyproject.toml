@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "looptick==0.1.2",
     "openai>=1.107.1",
     "opencv-python>=4.12.0.88",
     "pip>=25.2",
