@@ -1,6 +1,7 @@
 import base64
 from typing import Dict, Any
 
+from rich import print
 from openai import OpenAI
 
 
@@ -66,15 +67,38 @@ class ChatBot:
             "model": self.model,
             "messages": messages,
             "temperature": 0.7,
+            "stream": True,
         }
         
         if json_mode:  # 只在需要时添加 response_format 参数
             api_params["response_format"] = {"type": "json_object"}
-            
+        
+        print(api_params) 
+        
         response = self.client.chat.completions.create(**api_params)
 
+        
+        print("AI: ", end="", flush=True)
+        content_parts = []
+        for chunk in response:
+            # 最后一个chunk不包含choices，但包含usage信息。
+            if chunk.choices:
+                # 关键：delta.content可能为None，使用`or ""`避免拼接时出错。
+                content = chunk.choices[0].delta.content or ""
+                print(content, end="", flush=True)
+                content_parts.append(content)
+            
+            else:
+                print("Usage:")
+                print(chunk.usage)
+
+        full_response = "".join(content_parts)
+        print(f"content_parts: {full_response}")
+
         # 获取 AI 回复
-        ai_response = response.choices[0].message.content
+        ai_response = full_response
+
+        # ai_response = response.choices[0].message.content
 
         # 根据是否使用历史记录来决定如何添加到对话历史
         if use_history:
@@ -93,14 +117,13 @@ if __name__ == "__main__":
     import cv2
     import json
     import time
-    from rich import print
 
     from vis import draw_bbox
     from config import llm_configs
 
-    # bot = ChatBot(llm_configs["glm-4.5v"])
+    bot = ChatBot(llm_configs["glm-4.5v"])
     # bot = ChatBot(llm_configs["qwen-vl-max"])
-    bot = ChatBot(llm_configs["qwen3-next"])
+    # bot = ChatBot(llm_configs["qwen3-next"])
 
     prompt = "找到画面中的水果和饮料"
     img_path = "tmp/test1.png"

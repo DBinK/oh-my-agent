@@ -8,8 +8,8 @@ from chatbot import ChatBot
 from vis import draw_bbox
 from config import llm_configs
 
-# bot = ChatBot(llm_configs["glm-4.5v"])
-bot = ChatBot(llm_configs["qwen-vl-max"])
+bot = ChatBot(llm_configs["glm-4.5v"])
+# bot = ChatBot(llm_configs["qwen-vl-max"])
 # bot = ChatBot(llm_configs["qwen3-next"])
 
 prompt = "把奶龙放到白色托盘里"
@@ -30,7 +30,7 @@ print(f"函数执行时间: {execution_time:.2f} 秒")
 print("模型返回结果JSON:")
 print(result_text)
 
-result_dict = json.loads(result_text)
+result_dict: dict = json.loads(result_text)
 objs = result_dict.get("objs", {})
 
 print("模型返回结果字典")
