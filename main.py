@@ -16,7 +16,10 @@ bot = ChatBot(llm_configs["glm-4.5v"])
 # bot = ChatBot(llm_configs["qwen3-next"])
 json_dumper = ChatBot(llm_configs["qwen3-next"])
 
-prompt = "把奶龙放到白色托盘里"
+# prompt = "把奶龙放到白色托盘里"
+# prompt = "把所有方块放到碗里里"
+prompt = "把桌面上的水果放到键盘上"
+# prompt = "把饮料瓶放到书本上"
 img_path = "tmp/test1.png"
 img_base64 = bot.encode_image(img_path)
 
@@ -35,7 +38,7 @@ print(f"bot执行时间: {end:.2f} 秒")
 
 result_dict = bot.json_loads(result_text)
 
-if result_dict:
+if result_dict is not None:
 
     print("模型返回结果字典")
     print(result_dict)

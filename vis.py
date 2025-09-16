@@ -24,6 +24,30 @@ def draw_bbox(
 
     h, w = img.shape[:2]
     objs = data.get("objs", {})
+    acts = data.get("acts")
+
+    # 显示任务描述（如果存在）
+    if acts:
+        # 设置字体和大小
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.7
+        thickness = 2
+        
+        # 计算所有动作文本的尺寸
+        act_strings = [f"{act[0]}({act[1]})" if len(act) > 1 else act[0] for act in acts]
+        line_height = 30  # 每行的高度
+        start_y = 30      # 起始Y位置
+        
+        # 绘制每个动作
+        for i, act_str in enumerate(act_strings):
+            y_position = start_y + i * line_height
+            # 确保不会绘制超出图像范围
+            if y_position < h - 10:
+                cv2.putText(img, act_str, (10, y_position), font, font_scale, (255, 255, 255), thickness)
+            else:
+                # 如果超出范围，显示省略号
+                cv2.putText(img, "...", (10, h - 10), font, font_scale, (255, 255, 255), thickness)
+                break
 
     # 给每个类别随机分配颜色
     colors = {
@@ -31,6 +55,7 @@ def draw_bbox(
         for name in objs
     }
 
+    # 绘制边界框和标签
     for name, box in objs.items():
         x1, y1, x2, y2 = box
         if normalized_range:
@@ -70,19 +95,35 @@ if __name__ == "__main__":
     # 紧凑数组格式
     result_json_fix = """
 {
-  "say": "目标物体为奶龙和白色托盘，需要将奶龙放入白色托盘中",
-  "task": "抓取奶龙，移动到白色托盘上方，放下奶龙",
-  "acts": [
-    ["moveTo", "milk_dragon"],
-    ["grip", "milk_dragon"],
-    ["moveTo", "white_tray"],
-    ["release"]
-  ],
-  "objs": {
-    "milk_dragon": [504, 269, 594, 365],
-    "white_tray": [614, 148, 857, 269]
-  }
+    "say": "目标是将桌面上的水果放到键盘上，桌面上有香蕉、苹果、猕猴桃、柠檬等水果",
+    "task": "依次抓取香蕉、苹果、猕猴桃、柠檬，并将它们放置到键盘上",
+    "acts": [
+        ["moveTo", "banana"],
+        ["grip", "banana"],
+        ["moveTo", "keyboard"],
+        ["release"],
+        ["moveTo", "apple"],
+        ["grip", "apple"],
+        ["moveTo", "keyboard"],
+        ["release"],
+        ["moveTo", "kiwi"],
+        ["grip", "kiwi"],
+        ["moveTo", "keyboard"],
+        ["release"],
+        ["moveTo", "lemon"],
+        ["grip", "lemon"],
+        ["moveTo", "keyboard"],
+        ["release"]
+    ],
+    "objs": {
+        "banana": [154, 229, 218, 320],
+        "apple": [321, 255, 358, 311],
+        "kiwi": [298, 295, 351, 350],
+        "lemon": [215, 309, 264, 370],
+        "keyboard": [197, 138, 402, 214]
+    }
 }
+
     """
 
     result_list = json.loads(result_json_fix)

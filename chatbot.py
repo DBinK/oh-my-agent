@@ -30,12 +30,13 @@ class ChatBot:
         with open(image_path, "rb") as image_file:
             return base64.b64encode(image_file.read()).decode("utf-8")
 
-    def json_loads(self, response_text):
+    def extract_json(self, response_text: str) -> str|None:
         """ 简单提取JSON部分的方法 """
         try:  # 首先尝试直接解析整个响应文本
-            return json.loads(response_text)
+            json.loads(response_text)  # 验证是否为有效的JSON
+            return response_text  # 返回原始文本
         except json.JSONDecodeError:
-            print("无法解析JSON，尝试提取文本中 JSON 部分")
+            print("JSON解析失败, 尝试查找JSON部分")
         
         try:  # 查找第一个{和最后一个}的位置
             first_brace = response_text.find('{')
@@ -43,13 +44,25 @@ class ChatBot:
             
             if first_brace != -1 and last_brace != -1 and first_brace < last_brace:
                 json_str = response_text[first_brace:last_brace+1]  # 提取JSON字符串
-                return json.loads(json_str)  # 尝试解析
+                json.loads(json_str)  # 验证是否为有效的JSON
+                return json_str       # 只返回JSON字符串
             
         except json.JSONDecodeError:
-            print("提取文本中 JSON 部分失败")
-        
-        return None
+            print("提取文本中 JSON 部分失败, 返回原始文本")
+            return response_text
     
+    def json_loads(self, response_text: str) -> dict|None:
+        """ 从响应文本中提取 JSON 字符串并加载为字典 """
+        json_str = self.extract_json(response_text)
+        if json_str is not None:
+            try:
+                return json.loads(json_str)
+            except json.JSONDecodeError:
+                print("解析提取的JSON字符串失败")
+                return None
+        return None
+        
+
     def chat(
         self,
         user_input: str,                 # Prompt 输入
@@ -57,10 +70,9 @@ class ChatBot:
         use_history: bool = False,       # 是否使用历史对话记录
         json_mode: bool | None = None,   # 是否使用 JSON 模式
     ) -> str:
-        # 添加用户消息
-        if img_base64:
-            # 如果有图像，构造包含图像和文本的消息
-            message_content = [
+        
+        if img_base64:            # 添加用户消息
+            message_content = [   # 如果有图像，构造包含图像和文本的消息
                 {"type": "text", "text": user_input},
                 {
                     "type": "image_url",
@@ -68,22 +80,17 @@ class ChatBot:
                 },
             ]
         else:
-            # 如果没有图像，只使用文本
-            message_content = user_input
-
-        # 构造消息列表
-        if use_history:
-            # 使用历史对话记录
-            messages = self.conversation.copy()
+            message_content = user_input   # 如果没有图像，只使用文本
+      
+        if use_history:   # 构造消息列表
+            messages = self.conversation.copy()   # 使用历史对话记录
             messages.append({"role": "user", "content": message_content})  # type: ignore
         else:
-            # 不使用历史对话记录，只发送系统提示和当前消息
-            messages = [
+            messages = [   # 不使用历史对话记录，只发送系统提示和当前消息
                 self.conversation[0],
                 {"role": "user", "content": message_content},
             ]
 
-        # 调用 API
         api_params = {  # 构造参数字典，避免传递 None 值
             "model": self.model,
             "messages": messages,
@@ -93,46 +100,36 @@ class ChatBot:
         
         if json_mode:  # 只在需要时添加 response_format 参数
             api_params["response_format"] = {"type": "json_object"}
-        
-        print(api_params) 
-        
-        response = self.client.chat.completions.create(**api_params)
 
+        # 调用 API
+        response = self.client.chat.completions.create(**api_params)
         
-        print("LLM 实时回复: ", end="", flush=True)
+        print("LLM 实时回复: ", flush=True)
         content_parts = []
         for chunk in response:
-            # 最后一个chunk不包含choices，但包含usage信息。
-            if chunk.choices:
-                # 关键：delta.content可能为None，使用`or ""`避免拼接时出错。
+            if chunk.choices:   # 关键：delta.content可能为None，使用`or ""`避免拼接时出错。
                 content = chunk.choices[0].delta.content or ""
                 print(content, end="", flush=True)
                 content_parts.append(content)
-            
-            else:
-                print("Usage:")
-                print(chunk.usage)
+        print("\n")
 
         full_response = "".join(content_parts)
-        # print(f"content_parts: {full_response}")
-
-        # 获取 AI 回复
         ai_response = full_response
 
-        # ai_response = response.choices[0].message.content
-
-        # 根据是否使用历史记录来决定如何添加到对话历史
-        if use_history:
+        # ai_response = response.choices[0].message.content  
+       
+        if use_history:  # 根据是否使用历史记录来决定如何添加到对话历史
             self.conversation.append({"role": "user", "content": message_content})  # type: ignore
             self.conversation.append({"role": "assistant", "content": ai_response})  # type: ignore
+
+        if json_mode:
+            ai_response = self.extract_json(ai_response)
 
         return ai_response  # type: ignore
 
     def clear_history(self):
         """清除对话历史，保留系统提示词"""
         self.conversation = [self.conversation[0]]
-
-
 
 
 if __name__ == "__main__":
