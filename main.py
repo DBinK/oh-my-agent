@@ -6,8 +6,8 @@ from looptick import LoopTick
 from rich import print
 
 from chatbot import ChatBot
-from vis import draw_bbox
 from config import llm_configs
+from vis import draw_bbox
 
 stamp = LoopTick()
 
