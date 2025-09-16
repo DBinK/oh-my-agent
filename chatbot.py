@@ -98,10 +98,11 @@ if __name__ == "__main__":
     from vis import draw_bbox
     from config import llm_configs
 
-    bot = ChatBot(llm_configs["glm-4.5v"])
+    # bot = ChatBot(llm_configs["glm-4.5v"])
     # bot = ChatBot(llm_configs["qwen-vl-max"])
+    bot = ChatBot(llm_configs["qwen3-next"])
 
-    prompt = "找到画面中的方块"
+    prompt = "找到画面中的水果和饮料"
     img_path = "tmp/test1.png"
     img_base64 = bot.encode_image(img_path)
 
