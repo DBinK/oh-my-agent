@@ -119,7 +119,6 @@ if __name__ == "__main__":
     print(f"函数执行时间: {execution_time:.2f} 秒")
     # print("模型返回结果JSON:")
     # print(result_text)
-    
 
     result_dict = json.loads(result_text)
 
@@ -127,11 +126,8 @@ if __name__ == "__main__":
     print(result_dict)
 
     img = draw_bbox(img_path, result_dict)
-    cv2.imshow("YOLO Style Detection", img)
-    cv2.waitKey(0)
+    cv2.imshow("YOLO", img)
 
-    # img = draw_bbox(img_path, result_dict, None, 1000.0)    
-    # # roi = cv2.selectROI("请选择ROI区域", img, fromCenter=False, showCrosshair=True)
-    # # print("ROI区域:", roi)
-    # cv2.imshow("YOLO Style Detection", img)
-    # cv2.waitKey(0)
+    img = draw_bbox(img_path, result_dict, None, 1000.0)
+    cv2.imshow("YOLO_NORM", img)
+    cv2.waitKey(0)

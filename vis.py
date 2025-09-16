@@ -1,163 +1,95 @@
 import cv2
 import random
+import json
 
-def draw_bbox(image_path: str, detections: list, output_path: str | None = None, normalized_range: float | None = None):
+
+def draw_bbox(
+    image_path: str,
+    data: dict,
+    output_path: str | None = None,
+    normalized_range: float | None = None,
+):
     """
-    以YOLO风格绘制检测结果
+    根据输入字典绘制边界框 (适配objs字典格式)
 
     Args:
-        image_path (str): 原始图片路径
-        detections (list): 检测结果列表
-        output_path (str): 输出图片路径，默认为None则显示图片
-        normalized_range (float | None): 归一化范围，如果为None则使用绝对坐标，否则使用归一化坐标
-
-    Returns:
-        None
+        image_path (str): 图片路径
+        data (dict): 输入数据，包含objs字段
+        output_path (str | None): 输出图片路径，如果为None则不保存
+        normalized_range (float | None): 如果传入，则表示输入坐标是归一化的
     """
-    # 读取图片
     img = cv2.imread(image_path)
     if img is None:
         raise ValueError(f"无法读取图片: {image_path}")
 
-    img_height, img_width = img.shape[:2]
-    
-    # 生成随机颜色用于不同类别
-    colors = {}
-    for detection in detections:
-        name = detection["name"]
-        if name not in colors:
-            colors[name] = (
-                random.randint(0, 255),
-                random.randint(0, 255),
-                random.randint(0, 255),
-            )
+    h, w = img.shape[:2]
+    objs = data.get("objs", {})
 
-    # 在图片上绘制边界框和标签
-    for detection in detections:
-        name = detection["name"]
-        bbox = detection["bbox"]
-        
-        # 根据normalized_range参数决定是否进行坐标转换
-        if normalized_range is not None:
-            # 将归一化坐标转换为实际图像坐标
-            x1_norm, y1_norm, x2_norm, y2_norm = bbox
-            x1 = int(x1_norm * img_width / normalized_range)
-            y1 = int(y1_norm * img_height / normalized_range)
-            x2 = int(x2_norm * img_width / normalized_range)
-            y2 = int(y2_norm * img_height / normalized_range)
+    # 给每个类别随机分配颜色
+    colors = {
+        name: (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        for name in objs
+    }
+
+    for name, box in objs.items():
+        x1, y1, x2, y2 = box
+        if normalized_range:
+            x1 = int(x1 * w / normalized_range)
+            x2 = int(x2 * w / normalized_range)
+            y1 = int(y1 * h / normalized_range)
+            y2 = int(y2 * h / normalized_range)
         else:
-            # 使用绝对坐标
-            x1, y1, x2, y2 = bbox
+            x1, y1, x2, y2 = map(int, [x1, y1, x2, y2])
 
-        # 确保坐标在图片范围内
-        x1 = max(0, min(x1, img_width))
-        x2 = max(0, min(x2, img_width))
-        y1 = max(0, min(y1, img_height))
-        y2 = max(0, min(y2, img_height))
+        # 保证边界框在图片范围内
+        x1, x2 = max(0, x1), min(w, x2)
+        y1, y2 = max(0, y1), min(h, y2)
 
-        # 绘制边界框
         color = colors[name]
-        cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), color, 2)
-
-        # 绘制标签背景
-        label_size = cv2.getTextSize(name, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)[0]
+        # 绘制边界框
+        cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+        # 绘制文字标签
+        text_size = cv2.getTextSize(name, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)[0]
         cv2.rectangle(
-            img,
-            (int(x1), int(y1) - label_size[1] - 10),
-            (int(x1) + label_size[0], int(y1)),
-            color,
-            -1,
+            img, (x1, y1 - text_size[1] - 4), (x1 + text_size[0], y1), color, -1
         )
-
-        # 绘制标签文字
         cv2.putText(
-            img,
-            name,
-            (int(x1), int(y1) - 5),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.6,
-            (255, 255, 255),
-            2,
+            img, name, (x1, y1 - 2), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2
         )
 
-    # 保存或显示结果
     if output_path:
         cv2.imwrite(output_path, img)
         print(f"结果已保存到: {output_path}")
-    # else:
-    #     cv2.imshow("YOLO Style Detection", img)
-    #     cv2.waitKey(0)
-    #     cv2.destroyAllWindows()
 
     return img
 
 
 if __name__ == "__main__":
-
-    import json
-
     image_path = "tmp/test1.png"
 
-    # result_json_fix = """
-    # [
-    #     {
-    #         "name": "apple",
-    #         "bbox": [346, 622, 404, 663]
-    #     },
-    #     {
-    #         "name": "strawberry",
-    #         "bbox": [587, 273, 638, 314]
-    #     }
-    # ]
-    # """
-    
+    # 紧凑数组格式
     result_json_fix = """
-
-[
-    {
-        "name": "banana",
-        "bbox": [195, 168, 278, 230]
-    },
-    {
-        "name": "apple",
-        "bbox": [408, 195, 463, 250]
-    },
-    {
-        "name": "kiwi",
-        "bbox": [391, 215, 446, 255]
-    },
-    {
-        "name": "milk",
-        "bbox": [283, 168, 375, 215]
-    },
-    {
-        "name": "milk",
-        "bbox": [328, 215, 391, 275]
-    },
-    {
-        "name": "water",
-        "bbox": [110, 135, 181, 205]
-    },
-    {
-        "name": "juice",
-        "bbox": [0, 195, 78, 265]
-    }
-]
-
-
+{
+  "say": "目标物体为奶龙和白色托盘，需要将奶龙放入白色托盘中",
+  "task": "抓取奶龙，移动到白色托盘上方，放下奶龙",
+  "acts": [
+    ["moveTo", "milk_dragon"],
+    ["grip", "milk_dragon"],
+    ["moveTo", "white_tray"],
+    ["release"]
+  ],
+  "objs": {
+    "milk_dragon": [504, 269, 594, 365],
+    "white_tray": [614, 148, 857, 269]
+  }
+}
     """
 
-    result_dict = json.loads(result_json_fix)
+    result_list = json.loads(result_json_fix)
 
-    img = draw_bbox(image_path, result_dict)
+    img = draw_bbox(image_path, result_list)
     cv2.imshow("YOLO", img)
 
-    img = draw_bbox(image_path, result_dict, None, 1000.0)
+    img = draw_bbox(image_path, result_list, None, 1000.0)
     cv2.imshow("YOLO_NORM", img)
     cv2.waitKey(0)
-
-
-
-
-
-
