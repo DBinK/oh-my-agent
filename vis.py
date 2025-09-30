@@ -17,7 +17,7 @@ def render_text_img(text, font_path=r"C:\Windows\Fonts\simhei.ttf",
     width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
     # 创建足够大的图像来容纳文本
-    image = Image.new("RGB", (width, height), (0, 0, 0))
+    image = Image.new("RGB", (width, height), (0, 0, 0)) # type: ignore
     draw = ImageDraw.Draw(image)
     draw.text((0, 0), text, font=font, fill=color)
 
@@ -33,6 +33,7 @@ def overlay_image(background, foreground, x_offset, y_offset):
 def draw_bbox(
     image_path: str,
     data: dict,
+    prompt: str | None = None,
     output_path: str | None = None,
     normalized_range: float | None = None,
 ):
@@ -65,12 +66,15 @@ def draw_bbox(
     task = data.get("task")
 
     # 中文任务和 say 用贴图方式
-    if task:
-        text_img = render_text_img(f"task: {task}", font_size=20, color=(255,255,0))
-        img = overlay_image(img, text_img, 10, h-30)
+    if prompt is not None:
+        text_img = render_text_img(f"prompt: {prompt}", font_size=20, color=(255,255,0))
+        img = overlay_image(img, text_img, 10, h-90)
     if say:
         text_img = render_text_img(f"say: {say}", font_size=20, color=(255,255,255))
         img = overlay_image(img, text_img, 10, h-60)
+    if task:
+        text_img = render_text_img(f"task: {task}", font_size=20, color=(255,255,255))
+        img = overlay_image(img, text_img, 10, h-30)
 
 
     # 显示任务描述（如果存在）
@@ -173,11 +177,13 @@ if __name__ == "__main__":
 
     """
 
+    prompt = "把奶龙放到白色托盘里"
+
     result_list = json.loads(result_json_fix)
 
     img = draw_bbox(image_path, result_list)
     cv2.imshow("YOLO", img)
 
-    img = draw_bbox(image_path, result_list, None, 1000.0)
+    img = draw_bbox(image_path, result_list, prompt, None, 1000.0)
     cv2.imshow("YOLO_NORM", img)
     cv2.waitKey(0)

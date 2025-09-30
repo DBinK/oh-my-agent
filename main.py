@@ -18,10 +18,10 @@ bot = ChatBot(llm_configs["qwen3-vl"])
 
 json_dumper = ChatBot(llm_configs["qwen3-next"])
 
-prompt = "把奶龙放到白色托盘里"
+# prompt = "把奶龙放到白色托盘里"
 # prompt = "把所有方块放到碗里里"
 # prompt = "把桌面上的水果放到键盘上"
-# prompt = "把饮料瓶放到书本上"
+prompt = "把饮料瓶放到书本上"
 img_path = "tmp/test1.png"
 img_base64 = bot.encode_image(img_path)
 
@@ -49,9 +49,9 @@ if result_dict is not None:
     print("检测到的对象:")
     print(objs)
 
-    img = draw_bbox(img_path, result_dict)
+    img = draw_bbox(img_path, result_dict, prompt)
     cv2.imshow("YOLO", img)
 
-    img = draw_bbox(img_path, result_dict, None, 1000.0)
+    img = draw_bbox(img_path, result_dict, prompt, None, 1000.0)
     cv2.imshow("YOLO_NORM", img)
     cv2.waitKey(0)

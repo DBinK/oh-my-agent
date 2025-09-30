@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "blinker>=1.9.0",
+    "dotenv>=0.9.9",
     "keyboard>=0.13.5",
     "looptick==0.1.2",
     "openai>=1.107.1",
