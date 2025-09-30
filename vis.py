@@ -1,7 +1,34 @@
 import cv2
 import random
 import json
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 
+def render_text_img(text, font_path=r"C:\Windows\Fonts\simhei.ttf", 
+                    font_size=24, color=(255,255,255)):
+    """生成透明背景文字图（BGRA）"""
+    # 创建字体对象
+    font = ImageFont.truetype(font_path, font_size)
+
+    # 创建一个空白图像以获取文本的尺寸
+    temp_image = Image.new("RGB", (1, 1))
+    draw = ImageDraw.Draw(temp_image)
+    bbox = draw.textbbox((0, 0), text, font=font)
+    width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
+
+    # 创建足够大的图像来容纳文本
+    image = Image.new("RGB", (width, height), (0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    draw.text((0, 0), text, font=font, fill=color)
+
+    return image
+
+def overlay_image(background, foreground, x_offset, y_offset):
+    fg = np.array(foreground)  # 将 PIL 图像转换为 NumPy 数组
+    fh, fw = fg.shape[:2]
+    bg = background.copy()
+    bg[y_offset:y_offset+fh, x_offset:x_offset+fw] = fg
+    return bg
 
 def draw_bbox(
     image_path: str,
@@ -19,12 +46,32 @@ def draw_bbox(
         normalized_range (float | None): 如果传入，则表示输入坐标是归一化的
     """
     img = cv2.imread(image_path)
+
     if img is None:
         raise ValueError(f"无法读取图片: {image_path}")
 
     h, w = img.shape[:2]
+
+    # 添加半透明遮罩
+    mask_percentage = 20
+    overlay = img.copy()
+    mask_width = int(w * mask_percentage / 100)  # 计算遮罩宽度
+    cv2.rectangle(overlay, (0, 0), (mask_width, h), (0, 0, 0), -1)
+    img = cv2.addWeighted(overlay, 0.5, img, 0.5, 0)
+
     objs = data.get("objs", {})
     acts = data.get("acts")
+    say = data.get("say")
+    task = data.get("task")
+
+    # 中文任务和 say 用贴图方式
+    if task:
+        text_img = render_text_img(f"task: {task}", font_size=20, color=(255,255,0))
+        img = overlay_image(img, text_img, 10, h-30)
+    if say:
+        text_img = render_text_img(f"say: {say}", font_size=20, color=(255,255,255))
+        img = overlay_image(img, text_img, 10, h-60)
+
 
     # 显示任务描述（如果存在）
     if acts:

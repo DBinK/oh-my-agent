@@ -11,14 +11,16 @@ from vis import draw_bbox
 
 stamp = LoopTick()
 
-bot = ChatBot(llm_configs["glm-4.5v"])
+# bot = ChatBot(llm_configs["glm-4.5v"])
 # bot = ChatBot(llm_configs["qwen-vl-max"])
 # bot = ChatBot(llm_configs["qwen3-next"])
+bot = ChatBot(llm_configs["qwen3-vl"])
+
 json_dumper = ChatBot(llm_configs["qwen3-next"])
 
-# prompt = "把奶龙放到白色托盘里"
+prompt = "把奶龙放到白色托盘里"
 # prompt = "把所有方块放到碗里里"
-prompt = "把桌面上的水果放到键盘上"
+# prompt = "把桌面上的水果放到键盘上"
 # prompt = "把饮料瓶放到书本上"
 img_path = "tmp/test1.png"
 img_base64 = bot.encode_image(img_path)
@@ -32,7 +34,7 @@ result_text = bot.chat(prompt, img_base64, json_mode=True)
 
 end = stamp.tick_sec()
 
-print(f"bot执行时间: {end:.2f} 秒")
+print(f"LLM 指令生成用时: {end:.2f} 秒")
 # print("模型返回结果 JSON:")
 # print(result_text)
 
