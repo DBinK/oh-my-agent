@@ -146,35 +146,39 @@ if __name__ == "__main__":
     # 紧凑数组格式
     result_json_fix = """
 {
-    "say": "目标是将桌面上的水果放到键盘上，桌面上有香蕉、苹果、猕猴桃、柠檬等水果",
-    "task": "依次抓取香蕉、苹果、猕猴桃、柠檬，并将它们放置到键盘上",
-    "acts": [
-        ["moveTo", "banana"],
-        ["grip", "banana"],
-        ["moveTo", "keyboard"],
-        ["release"],
-        ["moveTo", "apple"],
-        ["grip", "apple"],
-        ["moveTo", "keyboard"],
-        ["release"],
-        ["moveTo", "kiwi"],
-        ["grip", "kiwi"],
-        ["moveTo", "keyboard"],
-        ["release"],
-        ["moveTo", "lemon"],
-        ["grip", "lemon"],
-        ["moveTo", "keyboard"],
-        ["release"]
-    ],
-    "objs": {
-        "banana": [154, 229, 218, 320],
-        "apple": [321, 255, 358, 311],
-        "kiwi": [298, 295, 351, 350],
-        "lemon": [215, 309, 264, 370],
-        "keyboard": [197, 138, 402, 214]
-    }
+  "say": "目标物体为桌面上的水果，包括香蕉、苹果、猕猴桃、柠檬和奶龙，需要将它们放到键盘上",
+  "task": "抓取香蕉，放到键盘上；抓取苹果，放到键盘上；抓取猕猴桃，放到键盘上；抓取柠檬，放到键盘上；抓取奶龙，放到键盘上",
+  "acts": [
+    ["moveTo", "banana"],
+    ["grip", "banana"],
+    ["moveTo", "keyboard"],
+    ["release"],
+    ["moveTo", "apple"],
+    ["grip", "apple"],
+    ["moveTo", "keyboard"],
+    ["release"],
+    ["moveTo", "kiwi"],
+    ["grip", "kiwi"],
+    ["moveTo", "keyboard"],
+    ["release"],
+    ["moveTo", "lemon"],
+    ["grip", "lemon"],
+    ["moveTo", "keyboard"],
+    ["release"],
+    ["moveTo", "dairy_dragon"],
+    ["grip", "dairy_dragon"],
+    ["moveTo", "keyboard"],
+    ["release"]
+  ],
+  "objs": {
+    "banana": [156, 219, 219, 323],
+    "apple": [317, 240, 361, 317],
+    "kiwi": [301, 295, 350, 348],
+    "lemon": [216, 301, 269, 363],
+    "dairy_dragon": [403, 421, 459, 497],
+    "keyboard": [202, 132, 408, 208]
+  }
 }
-
     """
 
     prompt = "把奶龙放到白色托盘里"

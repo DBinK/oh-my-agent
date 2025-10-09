@@ -17,7 +17,7 @@ class ChatBot:
                 - base_url (str, optional): API 基础 URL
                 - system_prompt (str, optional): 系统提示词
         """
-        api_key = config.get("api_key")
+        api_key = config.get("api_key", "")
         base_url = config.get("base_url")
         system_prompt = config.get("system_prompt")
 
@@ -68,7 +68,7 @@ class ChatBot:
         user_input: str,                 # Prompt 输入
         img_base64: str | None = None,   # base64 编码的图像数据
         use_history: bool = False,       # 是否使用历史对话记录
-        json_mode: bool | None = None,   # 是否使用 JSON 模式
+        json_mode: bool | None = False,   # 是否使用 JSON 模式
     ) -> str:
         
         if img_base64:            # 添加用户消息
@@ -94,7 +94,8 @@ class ChatBot:
         api_params = {  # 构造参数字典，避免传递 None 值
             "model": self.model,
             "messages": messages,
-            "temperature": 0.7,
+            # "temperature": 0.7,
+            "temperature": 1.0,
             "stream": True,
         }
         
@@ -141,9 +142,10 @@ if __name__ == "__main__":
     from vis import draw_bbox
     from config import llm_configs
 
-    bot = ChatBot(llm_configs["glm-4.5v"])
+    # bot = ChatBot(llm_configs["glm-4.5v"])
     # bot = ChatBot(llm_configs["qwen-vl-max"])
     # bot = ChatBot(llm_configs["qwen3-next"])
+    bot = ChatBot(llm_configs["qwen3-vl-30b-instruct"])
 
     prompt = "找到画面中的水果和饮料"
     img_path = "tmp/test1.png"

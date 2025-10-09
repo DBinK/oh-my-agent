@@ -14,25 +14,33 @@ stamp = LoopTick()
 # bot = ChatBot(llm_configs["glm-4.5v"])
 # bot = ChatBot(llm_configs["qwen-vl-max"])
 # bot = ChatBot(llm_configs["qwen3-next"])
-bot = ChatBot(llm_configs["qwen3-vl"])
+# bot = ChatBot(llm_configs["qwen3-vl"])
+bot = ChatBot(llm_configs["qwen3-vl-30b-instruct"])
 
 json_dumper = ChatBot(llm_configs["qwen3-next"])
 
+# prompt = "把桌面上的水果放到键盘上"
 # prompt = "把奶龙放到白色托盘里"
 # prompt = "把所有方块放到碗里里"
-# prompt = "把桌面上的水果放到键盘上"
-prompt = "把饮料瓶放到书本上"
-img_path = "tmp/test1.png"
+# prompt = "把饮料瓶放到书本上"
+# img_path = "tmp/test1.png"
+
+prompt = "把番茄放到离它最近的手套上"
+# prompt = "把奶龙放到离他最近的抹布上"
+# prompt = "把奶龙放到离他最远的抹布上"
+img_path = "tmp/test.png"
+
 img_base64 = bot.encode_image(img_path)
 
 print(f"prompt 输入: {prompt}")
 # result_text = bot.chat("画面里有什么", img_base64, json_mode=False)
 
-start = stamp.tick_sec()
+start = stamp.tick_sec
 
-result_text = bot.chat(prompt, img_base64, json_mode=True)
+# result_text = bot.chat(prompt, img_base64, json_mode=True)
+result_text = bot.chat(prompt, img_base64)
 
-end = stamp.tick_sec()
+end = stamp.tick_sec
 
 print(f"LLM 指令生成用时: {end:.2f} 秒")
 # print("模型返回结果 JSON:")
