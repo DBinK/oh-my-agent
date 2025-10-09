@@ -48,7 +48,7 @@ class ChatBot:
                 return json_str       # 只返回JSON字符串
             
         except json.JSONDecodeError:
-            print("提取文本中 JSON 部分失败, 返回原始文本")
+            print("查找文本中 JSON 部分失败, 返回原始文本")
             return response_text
     
     def json_loads(self, response_text: str) -> dict|None:
@@ -94,8 +94,8 @@ class ChatBot:
         api_params = {  # 构造参数字典，避免传递 None 值
             "model": self.model,
             "messages": messages,
-            # "temperature": 0.7,
-            "temperature": 1.0,
+            "temperature": 0.7,
+            # "temperature": 1.0,
             "stream": True,
         }
         

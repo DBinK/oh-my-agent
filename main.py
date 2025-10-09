@@ -15,20 +15,23 @@ stamp = LoopTick()
 # bot = ChatBot(llm_configs["qwen-vl-max"])
 # bot = ChatBot(llm_configs["qwen3-next"])
 # bot = ChatBot(llm_configs["qwen3-vl"])
+# bot = ChatBot(llm_configs["qwen3-vl-30b-instruct-4090"])
+# bot = ChatBot(llm_configs["qwen3-vl-30b-thinking-4090"])
 bot = ChatBot(llm_configs["qwen3-vl-30b-instruct"])
+# bot = ChatBot(llm_configs["qwen3-vl-30b-thinking"])
 
 json_dumper = ChatBot(llm_configs["qwen3-next"])
 
-# prompt = "把桌面上的水果放到键盘上"
+prompt = "把桌面上的水果放到键盘上"
 # prompt = "把奶龙放到白色托盘里"
 # prompt = "把所有方块放到碗里里"
 # prompt = "把饮料瓶放到书本上"
-# img_path = "tmp/test1.png"
+img_path = "tmp/test1.png"
 
-prompt = "把番茄放到离它最近的手套上"
+# prompt = "把番茄放到离它最近的手套上"
 # prompt = "把奶龙放到离他最近的抹布上"
 # prompt = "把奶龙放到离他最远的抹布上"
-img_path = "tmp/test.png"
+# img_path = "tmp/test.png"
 
 img_base64 = bot.encode_image(img_path)
 
