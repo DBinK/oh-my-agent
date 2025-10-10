@@ -4,6 +4,7 @@ from typing import Dict, Any
 
 from rich import print 
 from openai import OpenAI
+import tiktoken
 
 
 class ChatBot:
@@ -61,7 +62,15 @@ class ChatBot:
                 print("解析提取的JSON字符串失败")
                 return None
         return None
+    
         
+    def count_tokens(self, text: str, model_name: str = "gpt-5"):
+        """ 计算给定文本的token数量 """
+        tokenizer = tiktoken.encoding_for_model(model_name)
+        tokens = tokenizer.encode(text)
+        tokens_count = len(tokens)
+        
+        return tokens_count, len(text), tokens  # 返回token数量 字符数 编码的token列表
 
     def chat(
         self,
@@ -114,19 +123,128 @@ class ChatBot:
                 content_parts.append(content)
         print("\n")
 
-        full_response = "".join(content_parts)
-        ai_response = full_response
-
-        # ai_response = response.choices[0].message.content  
+        if not content_parts:  # 如果没有内容，则返回空字符串
+            full_response_str = ""
+        else:
+            full_response_str = "".join(content_parts)
+            
+        # full_response_str = response.choices[0].message.content  
        
         if use_history:  # 根据是否使用历史记录来决定如何添加到对话历史
             self.conversation.append({"role": "user", "content": message_content})  # type: ignore
-            self.conversation.append({"role": "assistant", "content": ai_response})  # type: ignore
+            self.conversation.append({"role": "assistant", "content": full_response_str})  # type: ignore
 
         if json_mode:
-            ai_response = self.extract_json(ai_response)
+            ai_response = self.extract_json(full_response_str)
 
         return ai_response  # type: ignore
+    
+    def chat_with_metrics(
+        self,
+        user_input: str,  # Prompt 输入
+        img_base64: str | None = None,  # base64 编码的图像数据
+        use_history: bool = False,  # 是否使用历史对话记录
+        json_mode: bool | None = False,  # 是否使用 JSON 模式
+    ) -> dict:
+        
+        if img_base64:            # 添加用户消息
+            message_content = [   # 如果有图像，构造包含图像和文本的消息
+                {"type": "text", "text": user_input},
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{img_base64}"},
+                },
+            ]
+        else:
+            message_content = user_input   # 如果没有图像，只使用文本
+      
+        if use_history:   # 构造消息列表
+            messages = self.conversation.copy()   # 使用历史对话记录
+            messages.append({"role": "user", "content": message_content})  # type: ignore
+        else:
+            messages = [   # 不使用历史对话记录，只发送系统提示和当前消息
+                self.conversation[0],
+                {"role": "user", "content": message_content},
+            ]
+
+        api_params = {  # 构造参数字典，避免传递 None 值
+            "model": self.model,
+            "messages": messages,
+            "temperature": 0.7,
+            # "temperature": 1.0,
+            "stream": True,
+        }
+        
+        if json_mode:  # 只在需要时添加 response_format 参数
+            api_params["response_format"] = {"type": "json_object"}
+
+        # 初始化性能统计变量
+        start_time = time.time()
+        first_token_time = None
+
+        # 调用 API
+        response = self.client.chat.completions.create(**api_params)
+        
+        print("LLM 实时回复: ", flush=True)
+        
+        content_parts = []
+        for chunk in response:
+            if chunk.choices:   # 关键：delta.content可能为None，使用`or ""`避免拼接时出错。
+                content = chunk.choices[0].delta.content or ""
+                
+                if first_token_time is None and content:  # 记录首字延迟
+                    first_token_time = time.time()
+                    
+                print(content, end="", flush=True)
+                content_parts.append(content)
+                
+        print("\n")
+        
+        end_time = time.time()
+        total_time = end_time - start_time
+        
+        if not content_parts:  # 如果没有内容，则返回空字符串
+            full_response_str = ""
+        else:
+            full_response_str = "".join(content_parts)
+        
+        if first_token_time is not None:  # 计算首字延迟
+            first_token_delay = first_token_time - start_time
+        else:
+            first_token_delay = 0.0
+        
+        token_count, char_count, _ = self.count_tokens(full_response_str)  # 计算 token 指标
+        if token_count > 0:
+            tokens_per_second = token_count / total_time if total_time > 0 else 0
+            char_per_second = char_count / total_time if total_time > 0 else 0
+        else:
+            tokens_per_second = 0.0
+            char_per_second = 0.0
+            
+        print(f"首字延迟: {first_token_delay:.2f} 秒")
+        print(f"tokens avg: {tokens_per_second:.2f} tok/s, char avg: {char_per_second:.2f} char/s")
+        print(f"总token数: {token_count}")
+            
+        # full_response_str = response.choices[0].message.content  
+       
+        if use_history:  # 根据是否使用历史记录来决定如何添加到对话历史
+            self.conversation.append({"role": "user", "content": message_content})  # type: ignore
+            self.conversation.append({"role": "assistant", "content": full_response_str})  # type: ignore
+
+        if json_mode:
+            full_response_str = self.extract_json(full_response_str)
+
+        return {
+            "response": full_response_str,
+            "metrics": {
+                "first_token_delay": first_token_delay,
+                "total_time": total_time,
+                "token_count": token_count,
+                "tokens_per_second": tokens_per_second,
+                "char_count": char_count,
+                "char_per_second": char_per_second
+            }
+        }
 
     def clear_history(self):
         """清除对话历史，保留系统提示词"""

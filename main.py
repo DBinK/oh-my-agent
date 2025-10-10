@@ -15,10 +15,10 @@ stamp = LoopTick()
 # bot = ChatBot(llm_configs["qwen-vl-max"])
 # bot = ChatBot(llm_configs["qwen3-next"])
 # bot = ChatBot(llm_configs["qwen3-vl"])
-# bot = ChatBot(llm_configs["qwen3-vl-30b-instruct-4090"])
-# bot = ChatBot(llm_configs["qwen3-vl-30b-thinking-4090"])
 bot = ChatBot(llm_configs["qwen3-vl-30b-instruct"])
 # bot = ChatBot(llm_configs["qwen3-vl-30b-thinking"])
+# bot = ChatBot(llm_configs["qwen3-vl-30b-instruct-4090"])
+# bot = ChatBot(llm_configs["qwen3-vl-30b-thinking-4090"])
 
 json_dumper = ChatBot(llm_configs["qwen3-next"])
 

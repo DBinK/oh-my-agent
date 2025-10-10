@@ -146,11 +146,15 @@ if __name__ == "__main__":
     # 紧凑数组格式
     result_json_fix = """
 {
-  "say": "目标物体为桌面上的水果，包括香蕉、苹果、猕猴桃、柠檬和奶龙，需要将它们放到键盘上",
-  "task": "抓取香蕉，放到键盘上；抓取苹果，放到键盘上；抓取猕猴桃，放到键盘上；抓取柠檬，放到键盘上；抓取奶龙，放到键盘上",
+  "say": "目标物体为桌面上的香蕉、柠檬、苹果和猕猴桃，我需要将它们依次放到键盘上。",
+  "task": "依次抓取香蕉、柠檬、苹果和猕猴桃，移动到键盘位置，然后放下。",
   "acts": [
     ["moveTo", "banana"],
     ["grip", "banana"],
+    ["moveTo", "keyboard"],
+    ["release"],
+    ["moveTo", "lemon"],
+    ["grip", "lemon"],
     ["moveTo", "keyboard"],
     ["release"],
     ["moveTo", "apple"],
@@ -160,23 +164,14 @@ if __name__ == "__main__":
     ["moveTo", "kiwi"],
     ["grip", "kiwi"],
     ["moveTo", "keyboard"],
-    ["release"],
-    ["moveTo", "lemon"],
-    ["grip", "lemon"],
-    ["moveTo", "keyboard"],
-    ["release"],
-    ["moveTo", "dairy_dragon"],
-    ["grip", "dairy_dragon"],
-    ["moveTo", "keyboard"],
     ["release"]
   ],
   "objs": {
-    "banana": [156, 219, 219, 323],
-    "apple": [317, 240, 361, 317],
-    "kiwi": [301, 295, 350, 348],
-    "lemon": [216, 301, 269, 363],
-    "dairy_dragon": [403, 421, 459, 497],
-    "keyboard": [202, 132, 408, 208]
+    "banana": [160, 230, 215, 310],
+    "lemon": [210, 302, 255, 360],
+    "apple": [320, 245, 355, 308],
+    "kiwi": [300, 290, 340, 338],
+    "keyboard": [200, 135, 400, 195]
   }
 }
     """

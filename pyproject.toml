@@ -15,5 +15,6 @@ dependencies = [
     "pip>=25.2",
     "pyee>=13.0.0",
     "rich>=14.1.0",
+    "tiktoken>=0.12.0",
     "zai-sdk>=0.0.3.5",
 ]
