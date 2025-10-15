@@ -42,6 +42,17 @@ class ChatBot:
             except json.JSONDecodeError:
                 pass
         return None
+    
+    def json_loads(self, response_text: str) -> dict|None:
+        """ 从响应文本中提取 JSON 字符串并加载为字典 """
+        json_str = self.extract_json(response_text)
+        if json_str is not None:
+            try:
+                return json.loads(json_str)
+            except json.JSONDecodeError:
+                print("解析提取的JSON字符串失败")
+                return None
+        return None
 
     def count_tokens(self, text: str, model_name: str = "gpt-5"):
         """统计 token 数"""

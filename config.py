@@ -16,6 +16,18 @@ if not ZHIPU_API_KEY:
     raise ValueError("请设置 ZHIPU_API_KEY 环境变量")
 
 llm_configs = {
+    "qwen3-vl-8b-thinking": {
+        "api_key": TONGYI_API_KEY,
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "model": "qwen3-vl-8b-thinking",
+        "system_prompt": BAIGE_PROMPT,
+    },
+    "qwen3-vl-8b-instruct": {
+        "api_key": TONGYI_API_KEY,
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "model": "qwen3-vl-8b-instruct",
+        "system_prompt": BAIGE_PROMPT,
+    },
     "qwen3-vl-30b-instruct-4090": {
         "base_url": "http://192.168.1.192:18434/v1",
         "model": "Qwen/Qwen3-VL-30B-A3B-Instruct-FP8",
