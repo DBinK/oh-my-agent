@@ -112,7 +112,7 @@ class ChatBot:
         return "".join(parts), first_token_time
 
     # ===================== 核心功能函数 =====================
-    def chat(self, user_input: str, img_base64: str | None = None, use_history=False, json_mode=False) -> str:
+    def chat(self, user_input: str, img_base64: str | None = None, use_history=False, json_mode=False) -> str | None:
         """普通聊天接口"""
         msg_content = self._build_message_content(user_input, img_base64)
         messages = self._build_messages(msg_content, use_history)
@@ -126,8 +126,11 @@ class ChatBot:
                 {"role": "user", "content": msg_content},
                 {"role": "assistant", "content": text},
             ]
+            
+        if json_mode:
+            return self.extract_json(text)
 
-        return self.extract_json(text) if json_mode else text
+        return text 
 
     def chat_with_metrics(self, user_input: str, img_base64: str | None = None, use_history=False, json_mode=False) -> dict:
         """带性能指标的聊天接口"""
