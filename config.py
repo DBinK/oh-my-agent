@@ -21,6 +21,34 @@ llm_configs = {
         "model": "Qwen/Qwen3-VL-4B-Instruct",
         "system_prompt": BAIGE_PROMPT,
     },
+    "qwen3-vl-30b-instruct-4090": {
+        "base_url": "http://192.168.1.68:18434/v1",
+        "model": "Qwen/Qwen3-VL-30B-A3B-Instruct-FP8",
+        "system_prompt": BAIGE_PROMPT,
+    },
+    "qwen3-vl-30b-thinking-4090": {
+        "base_url": "http://192.168.1.68:19434/v1",
+        "model": "Qwen/Qwen3-VL-30B-A3B-Thinking-FP8",
+        "system_prompt": BAIGE_PROMPT,
+    },
+    "qwen3-vl-flash": {
+        "api_key": TONGYI_API_KEY,
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "model": "qwen3-vl-flash",
+        "system_prompt": BAIGE_PROMPT,
+    },
+    "qwen3-vl-plus": {
+        "api_key": TONGYI_API_KEY,
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "model": "qwen3-vl-plus",
+        "system_prompt": BAIGE_PROMPT,
+    },
+    "qwen3-vl-32b-instruct": {
+        "api_key": TONGYI_API_KEY,
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "model": "qwen3-vl-32b-instruct",
+        "system_prompt": BAIGE_PROMPT,
+    },
     "qwen3-vl-8b-thinking": {
         "api_key": TONGYI_API_KEY,
         "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
@@ -31,16 +59,6 @@ llm_configs = {
         "api_key": TONGYI_API_KEY,
         "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
         "model": "qwen3-vl-8b-instruct",
-        "system_prompt": BAIGE_PROMPT,
-    },
-    "qwen3-vl-30b-instruct-4090": {
-        "base_url": "http://192.168.1.68:18434/v1",
-        "model": "Qwen/Qwen3-VL-30B-A3B-Instruct-FP8",
-        "system_prompt": BAIGE_PROMPT,
-    },
-    "qwen3-vl-30b-thinking-4090": {
-        "base_url": "http://192.168.1.68:19434/v1",
-        "model": "Qwen/Qwen3-VL-30B-A3B-Thinking-FP8",
         "system_prompt": BAIGE_PROMPT,
     },
     "qwen3-vl-30b-instruct": {
