@@ -48,6 +48,8 @@ class SynaBotServer:
                     "milk dragon": (100.0, 150.0, 10.0),
                     "white tray": (200.0, 250.0, 10.0),
                     "lemon": (300.0, 350.0, 10.0),
+                    "apple": (350.0, 400.0, 10.0),
+                    "banana": (400.0, 450.0, 10.0),
                 }
             )
 
@@ -96,11 +98,17 @@ class SynaBotServer:
             orientation=(0, 0, 0, 1)
         )
         
-        # 模拟 50% 的失败
-        if random() < 0.5:
+        # 模拟概率失败
+        if random() < 0.2:
+            print("移动失败")
+            print("detection_results:")
+            print(self.detection_results)
+            print("preset_result:")
+            print(self.preset_result)
             return RobotResponse(success=False, message="移动失败")
         else:
-            self.preset_result.objects["lemon"] = target_pos  # 模拟物体位置更新
+            self.preset_result.objects[target_object] = target_pos  # 模拟物体位置更新
+            print("移动成功")
             print("detection_results:")
             print(self.detection_results)
             print("preset_result:")
