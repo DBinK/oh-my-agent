@@ -1,7 +1,7 @@
 # mcp_sever.py
 
 import time
-from random import random
+import random
 from typing import  Optional
 
 from rich import print
@@ -10,7 +10,6 @@ from pydantic import BaseModel
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.animation import FuncAnimation
 
 class ObjectsResult(BaseModel):
     """表示物体检测结果的数据模型"""
@@ -48,11 +47,11 @@ class SynaBotServer:
         self.detection_results: ObjectsResult = ObjectsResult(objects={})
         self.preset_result = ObjectsResult(
                 objects= {
-                    "milk dragon": (100.0, 150.0, 10.0),
-                    "white tray": (200.0, 250.0, 10.0),
-                    "lemon": (300.0, 350.0, 10.0),
+                    "milk dragon": (200.0, 150.0, 10.0),
+                    "white tray": (100.0, 250.0, 10.0),
+                    "lemon": (300.0, 450.0, 10.0),
                     "apple": (350.0, 400.0, 10.0),
-                    "banana": (400.0, 450.0, 10.0),
+                    "banana": (400.0, 350.0, 10.0),
                 }
             )
 
@@ -89,7 +88,7 @@ class SynaBotServer:
         # 绘制物体
         for name, pos in self.preset_result.objects.items():
             x, y, _ = pos
-            circle = patches.Circle((x, y), 20, color='blue', alpha=0.5)
+            circle = patches.Circle((x, y), 10, color='blue', alpha=0.4)
             self.ax.add_patch(circle)
             self.ax.text(x, y-30, name, ha='center', fontsize=8)
         
@@ -121,7 +120,7 @@ class SynaBotServer:
     
     def object_detector(self) -> ObjectsResult:
         """物体位置检测器"""
-        if random() < 0.1:  # 模拟 50% 的失败
+        if random.random() < 0.1:  # 模拟 50% 的失败
             self.detection_results = ObjectsResult(objects={})
             self.visualize_scene()
             print("物体检测失败")
@@ -163,7 +162,7 @@ class SynaBotServer:
         )
         
         # 模拟概率失败
-        if random() < 0.1:
+        if random.random() < 0.1:
             print("移动失败")
             print("detection_results:")
             print(self.detection_results)
@@ -196,7 +195,7 @@ class SynaBotServer:
         )
         
         # 模拟概率失败
-        if random() < 0.1:
+        if random.random() < 0.1:
             print("移动失败")
             print("detection_results:")
             print(self.detection_results)
@@ -221,7 +220,7 @@ class SynaBotServer:
         
         self.gripper_status = True
         
-        if random() < 0.1:  # 模拟 50% 的失败
+        if random.random() < 0.1:  # 模拟 50% 的失败
             self.visualize_scene()
             return RobotResponse(success=False, message="夹取失败")
         else:
@@ -234,7 +233,7 @@ class SynaBotServer:
         
         self.gripper_status = False
         
-        if random() < 0.1:  # 模拟 50% 的失败
+        if random.random() < 0.1:  # 模拟 50% 的失败
             self.visualize_scene()
             return RobotResponse(success=False, message="释放失败")
         else:
