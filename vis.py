@@ -4,8 +4,10 @@ import json
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-def render_text_img(text, font_path=r"C:\Windows\Fonts\simhei.ttf", 
-                    font_size=24, color=(255,255,255)):
+
+def render_text_img(
+    text, font_path=r"C:\Windows\Fonts\simhei.ttf", font_size=24, color=(255, 255, 255)
+):
     """生成透明背景文字图（BGRA）"""
     # 创建字体对象
     font = ImageFont.truetype(font_path, font_size)
@@ -17,18 +19,20 @@ def render_text_img(text, font_path=r"C:\Windows\Fonts\simhei.ttf",
     width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
     # 创建足够大的图像来容纳文本
-    image = Image.new("RGB", (width, height), (0, 0, 0)) # type: ignore
+    image = Image.new("RGB", (width, height), (0, 0, 0))  # type: ignore
     draw = ImageDraw.Draw(image)
     draw.text((0, 0), text, font=font, fill=color)
 
     return image
 
+
 def overlay_image(background, foreground, x_offset, y_offset):
     fg = np.array(foreground)  # 将 PIL 图像转换为 NumPy 数组
     fh, fw = fg.shape[:2]
     bg = background.copy()
-    bg[y_offset:y_offset+fh, x_offset:x_offset+fw] = fg
+    bg[y_offset : y_offset + fh, x_offset : x_offset + fw] = fg
     return bg
+
 
 def draw_bbox(
     image_path: str,
@@ -67,15 +71,16 @@ def draw_bbox(
 
     # 中文任务和 say 用贴图方式
     if prompt is not None:
-        text_img = render_text_img(f"prompt: {prompt}", font_size=20, color=(255,255,0))
-        img = overlay_image(img, text_img, 10, h-90)
+        text_img = render_text_img(
+            f"prompt: {prompt}", font_size=20, color=(255, 255, 0)
+        )
+        img = overlay_image(img, text_img, 10, h - 90)
     if say:
-        text_img = render_text_img(f"say: {say}", font_size=20, color=(255,255,255))
-        img = overlay_image(img, text_img, 10, h-60)
+        text_img = render_text_img(f"say: {say}", font_size=20, color=(255, 255, 255))
+        img = overlay_image(img, text_img, 10, h - 60)
     if task:
-        text_img = render_text_img(f"task: {task}", font_size=20, color=(255,255,255))
-        img = overlay_image(img, text_img, 10, h-30)
-
+        text_img = render_text_img(f"task: {task}", font_size=20, color=(255, 255, 255))
+        img = overlay_image(img, text_img, 10, h - 30)
 
     # 显示任务描述（如果存在）
     if acts:
@@ -83,21 +88,39 @@ def draw_bbox(
         font = cv2.FONT_HERSHEY_SIMPLEX
         font_scale = 0.7
         thickness = 2
-        
+
         # 计算所有动作文本的尺寸
-        act_strings = [f"{act[0]}({act[1]})" if len(act) > 1 else act[0] for act in acts]
+        act_strings = [
+            f"{act[0]}({act[1]})" if len(act) > 1 else act[0] for act in acts
+        ]
         line_height = 30  # 每行的高度
-        start_y = 30      # 起始Y位置
-        
+        start_y = 30  # 起始Y位置
+
         # 绘制每个动作
         for i, act_str in enumerate(act_strings):
             y_position = start_y + i * line_height
             # 确保不会绘制超出图像范围
             if y_position < h - 10:
-                cv2.putText(img, act_str, (10, y_position), font, font_scale, (255, 255, 255), thickness)
+                cv2.putText(
+                    img,
+                    act_str,
+                    (10, y_position),
+                    font,
+                    font_scale,
+                    (255, 255, 255),
+                    thickness,
+                )
             else:
                 # 如果超出范围，显示省略号
-                cv2.putText(img, "...", (10, h - 10), font, font_scale, (255, 255, 255), thickness)
+                cv2.putText(
+                    img,
+                    "...",
+                    (10, h - 10),
+                    font,
+                    font_scale,
+                    (255, 255, 255),
+                    thickness,
+                )
                 break
 
     # 给每个类别随机分配颜色

@@ -5,8 +5,8 @@ from prompt import IMG_TO_BBOX, IMG_TO_BBOX_NORM, BAIGE_PROMPT, DUMP_TEXT_JSON
 # 加载.env文件中的环境变量
 load_dotenv()
 
-TONGYI_API_KEY = os.getenv('TONGYI_API_KEY')
-ZHIPU_API_KEY = os.getenv('ZHIPU_API_KEY')
+TONGYI_API_KEY = os.getenv("TONGYI_API_KEY")
+ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY")
 
 # 检查必要环境变量是否存在
 if not TONGYI_API_KEY:
