@@ -27,8 +27,6 @@ bot = ChatBot(llm_configs["qwen3-vl-plus"])
 # bot = ChatBot(llm_configs["qwen3-vl-32b-instruct"])
 
 
-json_dumper = ChatBot(llm_configs["qwen3-next"])
-
 prompt = "把桌面上的水果放到键盘上"
 # prompt = "把奶龙放到白色托盘里"
 # prompt = "把所有方块放到碗里里"
