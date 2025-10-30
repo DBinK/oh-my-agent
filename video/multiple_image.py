@@ -5,6 +5,8 @@ from rich import print
 
 # 可配置参数
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
+assert API_KEY, "请设置环境变量 DASHSCOPE_API_KEY" 
+
 MODEL_NAME = "qwen3-vl-flash"
 IMAGE_PATHS = [
     r"tmp\flip_milk_train_data\flip_milk_1_success\color_0\color_0_0.jpg",
@@ -67,4 +69,4 @@ if __name__ == "__main__":
     )
 
     # 打印结果
-    print(response["output"]["choices"][0]["message"].content[0]["text"])
+    print(response["output"]["choices"][0]["message"].content[0]["text"]) # type: ignore
