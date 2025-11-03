@@ -5,7 +5,7 @@ from rich import print
 
 # 可配置参数
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
-assert API_KEY, "请设置环境变量 DASHSCOPE_API_KEY" 
+assert API_KEY, "请设置环境变量 DASHSCOPE_API_KEY"
 
 MODEL_NAME = "qwen3-vl-flash"
 IMAGE_PATHS = [
@@ -50,7 +50,6 @@ def prepare_content(image_paths: list, prompt: str) -> list:
     return content
 
 
-
 if __name__ == "__main__":
     # 打印API密钥用于调试
     # print(API_KEY)
@@ -69,4 +68,4 @@ if __name__ == "__main__":
     )
 
     # 打印结果
-    print(response["output"]["choices"][0]["message"].content[0]["text"]) # type: ignore
+    print(response["output"]["choices"][0]["message"].content[0]["text"])  # type: ignore
